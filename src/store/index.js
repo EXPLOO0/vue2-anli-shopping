@@ -9,6 +9,9 @@ export default new Vuex.Store({
 
   },
   getters: {
+    token (state) {
+      return state.user.userInfo.token
+    }
   },
   mutations: {
   },
