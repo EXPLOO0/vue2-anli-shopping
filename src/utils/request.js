@@ -10,6 +10,16 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
+  // 开启loading，禁止背景点击，防止多次无效触发
+
+  // 加载图标
+  Toast.loading({
+    message: '加载中...', // 文本信息
+    forbidClick: true, // 禁止背景点击
+    loadingType: 'spinner', // 图片样式
+    duration: 0// 不会自动消失
+  })
+
   return config
 }, function (error) {
   // 对请求错误做些什么
@@ -26,6 +36,9 @@ instance.interceptors.response.use(function (response) {
     Toast(res.message)
     // 抛出一个错误的promise
     return Promise.reject(res.message)
+  } else {
+    // 关闭loading效果
+    Toast.clear()
   }
   return res
 }, function (error) {

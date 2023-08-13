@@ -1,17 +1,16 @@
+import { setInfo, getInfo } from '@/utils/storage'
 export default {
   namespaced: true,
   state () {
     return {
       // 个人权证相关
-      userInfo: {
-        userId: null, // 用户id
-        token: null // 用户token标识
-      }
+      userInfo: getInfo()
     }
   },
   mutations: {
     setUserInfo (state, user) {
       state.userInfo = user
+      setInfo(user)
     }
   },
   actions: { },

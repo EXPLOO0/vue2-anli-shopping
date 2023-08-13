@@ -17,7 +17,7 @@ export const setInfo = (obj) => {
   localStorage.setItem(INFO_KEY, JSON.stringify(obj))
 }
 
-// 移除个人信息，
+// 移除个人信息，实验
 export const removeInfo = () => {
   localStorage.removeItem(INFO_KEY)
 }
