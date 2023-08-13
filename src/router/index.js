@@ -60,7 +60,6 @@ router.beforeEach((to, from, next) => {
   // 是权限页面，需要验证token
   // const token = store.state.user.userInfo.token
   const token = store.getters.token
-  console.log(token)
   if (token) {
     // 存在，放行
     next()
