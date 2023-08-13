@@ -61,7 +61,7 @@ router.beforeEach((to, from, next) => {
   // const token = store.state.user.userInfo.token
   const token = store.getters.token
   console.log(token)
-  if (!token) {
+  if (token) {
     // 存在，放行
     next()
   } else {
