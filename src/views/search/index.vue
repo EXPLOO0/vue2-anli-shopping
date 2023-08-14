@@ -1,10 +1,10 @@
 <template>
   <div class="search">
-    <van-nav-bar title="商品搜索" left-arrow @click-left="$router.go(-1)" />
+    <van-nav-bar title="商品搜索" left-arrow @click-left="$router.push('/')" />
 
-    <van-search show-action placeholder="请输入搜索关键词" clearable>
+    <van-search v-model="searchValue" show-action placeholder="请输入搜索关键词" clearable>
       <template #action>
-        <div>搜索</div>
+        <div @click=" goSearch(searchValue)">搜索</div>
       </template>
     </van-search>
 
@@ -12,21 +12,48 @@
     <div class="search-history">
       <div class="title">
         <span>最近搜索</span>
-        <van-icon name="delete-o" size="16" />
+        <van-icon name="delete-o" size="16" @click="clearHistory" />
       </div>
       <div class="list">
-        <div class="list-item" @click="$router.push('/searchlist')">炒锅</div>
-        <div class="list-item" @click="$router.push('/searchlist')">电视</div>
-        <div class="list-item" @click="$router.push('/searchlist')">冰箱</div>
-        <div class="list-item" @click="$router.push('/searchlist')">手机</div>
+        <div v-for="item in searchHistoryList" :key="item" class="list-item" @click="goSearch(item)">
+          {{ item }}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { setHistory, getHistory } from '@/utils/storage'
 export default {
-  name: 'SearchIndex'
+  name: 'SearchIndex',
+  data () {
+    return {
+      searchValue: '',
+      searchHistoryList: []
+    }
+  },
+  created () {
+    this.searchHistoryList = getHistory()
+  },
+  methods: {
+    goSearch (key) {
+      const index = this.searchHistoryList.indexOf(key)
+      if (index !== -1) {
+        // 存在相同的顶，将原有关键字移除
+        // sp1ice(从哪开始，则除几个，顶1，项2)
+        this.searchHistoryList.splice(index, 1)
+      }
+      this.searchHistoryList.unshift(key)
+
+      setHistory(this.searchHistoryList)
+      this.$router.push(`/searchlist?search=${key}`)
+    },
+    clearHistory () {
+      this.searchHistoryList = []
+      setHistory(this.searchHistoryList)
+    }
+  }
 }
 </script>
 
@@ -36,6 +63,7 @@ export default {
     background-color: #fa2209;
     color: #fff;
   }
+
   ::v-deep .van-search__action {
     background-color: #c21401;
     color: #fff;
@@ -43,9 +71,11 @@ export default {
     border-radius: 0 5px 5px 0;
     margin-right: 10px;
   }
+
   ::v-deep .van-icon-arrow-left {
     color: #333;
   }
+
   .title {
     height: 40px;
     line-height: 40px;
@@ -55,6 +85,7 @@ export default {
     align-items: center;
     padding: 0 15px;
   }
+
   .list {
     display: flex;
     justify-content: flex-start;
@@ -62,6 +93,7 @@ export default {
     padding: 0 10px;
     gap: 5%;
   }
+
   .list-item {
     width: 30%;
     text-align: center;
