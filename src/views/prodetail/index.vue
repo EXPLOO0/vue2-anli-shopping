@@ -64,11 +64,11 @@
 
     <!-- 底部 -->
     <div class="footer">
-      <div class="icon-home">
+      <div @click="$router.push('/')" class="icon-home">
         <van-icon name="wap-home-o" />
         <span>首页</span>
       </div>
-      <div class="icon-cart">
+      <div @click="$router.push('/cart')" class="icon-cart">
         <span v-if="cartTotal > 0" class="num">{{ cartTotal }}</span>
         <van-icon name="shopping-cart-o" />
         <span>购物车</span>
@@ -101,7 +101,7 @@
         </div>
         <div @click="addCart" class="showbtn" v-if="detail.stock_total > 0">
           <div class="btn" v-if="mode === 'cart'">加入购物车</div>
-          <div class="btn now" v-else>立刻购买</div>
+          <div class="btn now" v-else @click="goBuyNow">立刻购买</div>
         </div>
         <div class="btn-none" v-else>该商品已抢完</div>
       </div>
@@ -114,8 +114,10 @@ import { getProDetail, getDetailComments } from '@/api/prodetail'
 import { addCart, getCartTotal } from '@/api/cart'
 import defaultImg from '@/assets/default-avatar.png'
 import CountBox from '@/components/CountBox.vue'
+import loginConfirm from '@/mixins/loginConfirm'
 export default {
   name: 'ProDetail',
+  mixins: [loginConfirm],
   components: { CountBox },
   data () {
     return {
@@ -142,6 +144,22 @@ export default {
     this.getcartTotal()
   },
   methods: {
+    goBuyNow () {
+      // 登录判断
+      if (this.loginConfirm()) {
+        return
+      }
+
+      this.$router.push({
+        path: '/pay',
+        query: {
+          mode: 'buyNow',
+          goodsId: this.goodsId,
+          goodsSkuId: this.detail.skuList[0].goods_sku_id,
+          goodsNum: this.addCount
+        }
+      })
+    },
     onChange (index) {
       this.current = index
     },
@@ -164,30 +182,8 @@ export default {
       this.showPannel = true
     },
     async addCart () {
-      console.log(this.$store.getters.token)
-      // 判断token是否存在
-      // 1.如果token不存在，弹确认框
-      // 2.如果token存在，继续请求操作
-      if (!this.$store.getters.token) {
-        this.$dialog.confirm({
-          title: '温馨提示',
-          message: '请先进行登录',
-          confirmButtonText: '去登录',
-          cancelButtonText: '再逛逛'
-        })
-          .then(() => {
-            // 如果希望，跳转到登录 => 登录后能回跳回来，需要在跳转去携带参数（当前的路径地址）
-            // this.$route.ful1Path(带参数
-            // replace:替换跳转记录，不新增记录
-            this.$router.replace({
-              path: '/login',
-              query: {
-                backUrl: this.$route.fullPath
-              }
-            })
-          })
-          .catch(() => { })
-        return false
+      if (this.loginConfirm()) {
+        return
       }
       const { data } = await addCart(this.goodsId, this.addCount, this.detail.skuList[0].goods_sku_id)
       this.cartTotal = data.cartTotal
