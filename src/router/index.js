@@ -18,7 +18,6 @@ Vue.use(VueRouter)
 
 const router = new VueRouter({
   routes: [
-    { path: '/login', component: Login },
     {
       path: '/',
       component: Layout,
@@ -32,6 +31,7 @@ const router = new VueRouter({
         { path: '/user', component: User }
       ]
     },
+    { path: '/login', component: Login },
     { path: '/myorder', component: Myorder },
     { path: '/pay', component: Pay },
     // 动态路由传参，确认将来是哪个商品，路由参数中携带id
@@ -56,16 +56,17 @@ router.beforeEach((to, from, next) => {
   if (!authUrls.includes(to.path)) {
     // 非权限页面直接放行
     next()
-  }
-  // 是权限页面，需要验证token
-  // const token = store.state.user.userInfo.token
-  const token = store.getters.token
-  if (token) {
-    // 存在，放行
-    next()
   } else {
-    // 不存在，拦截到登录
-    next('/login')
+    // 是权限页面，需要验证token
+    // const token = store.state.user.userInfo.token
+    const token = store.getters.token
+    if (token) {
+      // 存在，放行
+      next()
+    } else {
+      // 不存在，拦截到登录
+      next('/login')
+    }
   }
 })
 

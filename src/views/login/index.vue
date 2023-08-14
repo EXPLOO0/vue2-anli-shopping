@@ -117,10 +117,16 @@ export default {
       const res = await tellLogin(this.tell, this.smsCode)
 
       this.$store.commit('user/setUserInfo', res.data)
-
-      this.$router.push('/user')
       Toast(res.message)
+
+      // 判断地址栏有无回跳地址
+      const url = this.$route.query.backUrl || '/'
+
+      this.$router.replace(url)
     }
+  },
+  destroyed () {
+    clearInterval(this.timer)
   }
 }
 </script>

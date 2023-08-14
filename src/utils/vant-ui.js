@@ -2,9 +2,10 @@ import Vue from 'vue'
 import {
   Button, Icon, Rate, Tabbar, TabbarItem,
   NavBar, Toast, Search, Swipe, SwipeItem,
-  Grid, GridItem, Lazyload, ActionSheet
+  Grid, GridItem, Lazyload, ActionSheet, Dialog
 } from 'vant'
 
+Vue.use(Dialog)
 Vue.use(ActionSheet)
 Vue.use(Lazyload)
 Vue.use(GridItem)
